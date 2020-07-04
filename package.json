@@ -14,11 +14,14 @@
   "scripts": {
     "build:dev": "npm run clear && webpack --mode=development",
     "build:prod": "npm run clear && webpack --mode=production",
-    "start": "webpack-dev-server --open",
+    "start": "webpack-dev-server --open --mode=development",
     "clear": "rm -rf ./dist"
   },
   "devDependencies": {
+    "copy-webpack-plugin": "^6.0.3",
     "file-loader": "^6.0.0",
+    "html-loader": "^1.1.0",
+    "html-webpack-plugin": "^4.3.0",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
