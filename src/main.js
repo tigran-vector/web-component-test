@@ -14,6 +14,18 @@ import { transformToComponentFormat } from './util/util.js'
   function setupComponent(data) {
     const listElement = document.querySelector('tig-list');
     listElement.setAttribute('data-list', JSON.stringify(data));
+
+    listElement.addEventListener('clickToItemList', function (e) {
+      console.log(e.detail);
+      if (e.detail) {
+        const profileInfoElement = document.querySelector('#mainProfile');
+        profileInfoElement.innerHTML = '';
+        const element = document.createElement('tig-user-profile')
+        element.setAttribute('mode', 'card')
+        element.setAttribute('user-data', JSON.stringify(data[e.detail.id]))
+        profileInfoElement.appendChild(element);
+      }
+    });
   }
 
   function loadData(event) {

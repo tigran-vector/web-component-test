@@ -37,8 +37,20 @@ template.innerHTML = `
     font-size: 14px;
   }
 
+  .info-block__title{
+    text-transform: capitalize;
+  }
+
   .user-profile__container--list .info-block{
     padding-left: 10px;
+  }
+
+  .details {
+    padding: 0 8px;
+  }
+
+  .details__item{
+    padding: 4px 0;
   }
 
 </style>
@@ -103,10 +115,29 @@ export class TigUserProfile extends HTMLElement {
     infoContainer.classList.add('info-block');
     let title = document.createElement('h3');
     title.classList.add('info-block__title');
-    title.innerHTML = `${(this._data.firstname) ? this._data.firstname : ''} ${(this._data.lastname) ? this._data.lastname : ''}`;
+    title.innerHTML = `${(this._data.title) ? this._data.title : ''} ${(this._data.firstname) ? this._data.firstname : ''} ${(this._data.lastname) ? this._data.lastname : ''}`;
     infoContainer.appendChild(title);
     if (this._mode === 'card') {
+      let profileDetails = document.createElement('div');
+      profileDetails.classList.add(['info-block__details', 'details']);
 
+      let gender = document.createElement('div')
+      gender.classList.add('details__item');
+      gender.innerHTML = `Gender: ${(this._data.gender) ? this._data.gender : 'not indicated'}`
+
+      let email = document.createElement('div')
+      email.classList.add('details__item');
+      email.innerHTML = `Email: ${(this._data.email) ? this._data.email : 'not indicated'}`
+
+      let address = document.createElement('div')
+      address.classList.add('details__item');
+      address.innerHTML = `Address: ${(this._data.address) ? this._data.email : 'not indicated'}`
+
+      profileDetails.appendChild(gender);
+      profileDetails.appendChild(email);
+      profileDetails.appendChild(address);
+
+      infoContainer.appendChild(profileDetails);
     }
     return infoContainer;
   }

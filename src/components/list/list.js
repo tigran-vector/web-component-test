@@ -1,3 +1,5 @@
+// import { ListItemCustomerClick } from '../../util/list-item-click-event.js';
+
 const template = document.createElement('template');
 
 template.innerHTML = `
@@ -63,13 +65,10 @@ export class TigList extends HTMLElement {
 
   constructor() {
     super();
-    // Rendering Html in dom 
-    // Using close encapsulation to avoid external influence
-    const root = this.attachShadow({ mode: 'closed' });
+    const root = this.attachShadow({ mode: 'open' });
     root.appendChild(template.content.cloneNode(true));
-    // Get list content
+
     this._listContent = root.querySelector('div.list');
-    // Get dynamic item of list
     this._slot = this._listContent.querySelector('slot');
 
     this._slot.addEventListener('slotchange', event => {
@@ -131,8 +130,8 @@ export class TigList extends HTMLElement {
 
   render() {
     this._listContent.innerHTML = '';
-    this._data.forEach(itemData => {
-      const item = this.constructListItem(itemData);
+    this._data.forEach((itemData, idx) => {
+      const item = this.constructListItem(itemData, idx);
       this._listContent.appendChild(item);
     });
 
@@ -150,13 +149,24 @@ export class TigList extends HTMLElement {
 
   normalizeRender() {
     this._slot.classList.add('hide-content');
-    console.log(this._slot);
   }
 
-  constructListItem(itemData) {
+  triggerEvent(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    let customEvent = new ListItemCustomerClick('clickToItemList', {
+      id: +event.path[1].id
+    });
+    let parentElement = document.querySelector('tig-list');
+    parentElement.dispatchEvent(customEvent);
+  }
+
+  constructListItem(itemData, idx) {
     const customerTemplate = this._listItemTemplate;
     const clone = document.createElement('div');
     clone.classList.add('list__item')
+    clone.setAttribute('id', idx);
+    clone.addEventListener('click', this.triggerEvent);
     clone.innerHTML = customerTemplate;
     clone.childNodes[0].setAttribute(this._customerField, JSON.stringify(itemData));
     return clone;

@@ -6,6 +6,7 @@ module.exports = (mode) => {
   return {
     mode,
     entry: {
+      'js/event-list': path.join(__dirname, 'src/util', 'list-item-click-event.js'),
       'js/list': path.join(__dirname, 'src/components/list', 'list.js'),
       'js/user-profile': path.join(__dirname, 'src/components/user-profile', 'user-profile.js'),
       'js/main': path.join(__dirname, 'src', 'main.js'),

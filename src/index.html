@@ -36,6 +36,23 @@
 				color: white;
 				margin: 8px;
 			}
+
+			.wc__board {
+				padding: 6px;
+			}
+
+			.board {
+				display: flex;
+				flex-direction: row;
+			}
+
+			.board__item {
+				flex: 1;
+			}
+
+			.board__item--right {
+				padding: 0 4px;
+			}
 		</style>
 	</head>
 	<body>
@@ -60,9 +77,7 @@
 					<tig-user-profile mode="list"></tig-user-profile>
 				</tig-list>
 			</div>
-			<div class="board__item board__item--right">
-				<tig-user-profile mode="card"></tig-user-profile>
-			</div>
+			<div class="board__item board__item--right" id="mainProfile"></div>
 		</div>
 	</body>
 </html>
