@@ -1,4 +1,4 @@
-function csvJSON() {
+function csvJSON(csv) {
   // This code was used from --> http://techslides.com/convert-csv-to-json-in-javascript
   let lines = csv.split("\n");
 
@@ -24,7 +24,7 @@ function normalizeRespond(data) {
   try {
     normalizedData = JSON.parse(data);
   } catch (error) {
-    csvJSON(data);
+    normalizedData = JSON.parse(csvJSON(data));
   }
   return normalizedData;
 }

@@ -13,7 +13,7 @@ import { transformToComponentFormat } from './util/util.js'
 
   function setupComponent(data) {
     const listElement = document.querySelector('tig-list');
-    listElement.setAttribute('data-list', data);
+    listElement.setAttribute('data-list', JSON.stringify(data));
   }
 
   function loadData(event) {

@@ -56,12 +56,12 @@
 		</div>
 		<div class="wc__board board">
 			<div class="board__item board__item--left">
-				<tig-list empty-message="There are no user loaded">
-					<tig-user-profile></tig-user-profile>
+				<tig-list empty-message="There are no user loaded" customer-item-field="user-data">
+					<tig-user-profile mode="list"></tig-user-profile>
 				</tig-list>
 			</div>
 			<div class="board__item board__item--right">
-				<tig-user-profile></tig-user-profile>
+				<tig-user-profile mode="card"></tig-user-profile>
 			</div>
 		</div>
 	</body>

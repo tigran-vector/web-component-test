@@ -6,12 +6,16 @@ template.innerHTML = `
     padding: 8px;
   }
 
+  .hide-content{
+    display:none;
+  }
+
 	.list {
     background-color: #fafafa;
     border: solid 1px #c8c8c8;
     border-radius: 4px;
     padding: 4px;
-	}
+  }
 
 	.list__empty-stage {
 		width: 100%;
@@ -28,7 +32,19 @@ template.innerHTML = `
 
 	.list__empty-stage--hide {
 		display: none;
-	}
+  }
+
+  .list__item{
+    border-style: solid;
+    border-width: 0;
+    border-bottom-width: 1px;
+    border-color: #c8c8c8;
+    cursor: pointer;
+  }
+
+  .list__item:last-child{
+    border: none;
+  }
 </style>
 
 <div class="list">
@@ -42,7 +58,7 @@ template.innerHTML = `
 export class TigList extends HTMLElement {
 
   static get observedAttributes() {
-    return ['empty-message', 'data-list'];
+    return ['empty-message', 'data-list', 'customer-item-field'];
   }
 
   constructor() {
@@ -51,52 +67,46 @@ export class TigList extends HTMLElement {
     // Using close encapsulation to avoid external influence
     const root = this.attachShadow({ mode: 'closed' });
     root.appendChild(template.content.cloneNode(true));
-    this.listContent = root.querySelector('div.list');
-    const slot = this.listContent.querySelector('slot');
-    console.log(slot);
+    // Get list content
+    this._listContent = root.querySelector('div.list');
+    // Get dynamic item of list
+    this._slot = this._listContent.querySelector('slot');
+
+    this._slot.addEventListener('slotchange', event => {
+      const node = this._slot.assignedNodes()[0];
+      if (node) {
+        console.log(node);
+        this._listItemTemplate = node.nextSibling.outerHTML;
+        this.normalizeRender();
+      }
+    });
   }
 
-  emptyStageSwift() {
-    const messageContainer = this.listContent.querySelector('div.list__empty-stage');
-    if (!this._data || this._data.length <= 0) {
-      messageContainer.classList.remove('list__empty-stage--hide');
-      messageContainer.classList.add('list__empty-stage--active');
-    } else {
-      messageContainer.classList.remove('list__empty-stage--active');
-      messageContainer.classList.add('list__empty-stage--hide');
-    }
-  }
-
-  get emptyMessage() {
-    return this.getAttribute('empty-message');
-  }
-
-  set emptyMessage(msg) {
-    const value = msg || 'Not content';
-    this.setAttribute('empty-message', value);
-    const messageContainer = this.listContent.querySelector('div.list__empty-stage');
+  setEmptyMessage(value) {
+    const msg = value || 'Not content';
+    this.setAttribute('empty-message', msg);
+    const messageContainer = this._listContent.querySelector('div.list__empty-stage');
     messageContainer.innerHTML = msg;
     this.emptyStageSwift();
   }
 
-  get listData() {
-    return this.getAttribute('data-list')
+  setListData(value) {
+    const itemData = JSON.parse(value);
+    this._data = itemData;
+    this.emptyStageSwift();
+    this.render();
   }
 
-  set listData(data) {
-    this.setAttribute('data-list', data || []);
-    this._data = data;
-    this.emptyStageSwift();
+  setCustomerItemField(value) {
+    this._customerField = value
+    this.setAttribute('customer-item-field', value)
   }
 
   // On Init CallBack
   connectedCallback() {
-    console.log('Component List added to DOM');
-  }
-
-  // on Destroy CallBack
-  disconnectedCallback() {
-    console.log('Component List added to DOM');
+    this._messageContainer = this._listContent.querySelector('div.list__empty-stage');
+    this.normalizeRender();
+    this.emptyStageSwift();
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
@@ -106,15 +116,52 @@ export class TigList extends HTMLElement {
 
     switch (name) {
       case 'empty-message':
-        this.emptyMessage = newVal;
+        this.setEmptyMessage(newVal);
         break;
       case 'data-list':
-        this.listData = newVal;
+        this.setListData(newVal);
+        break;
+      case 'customer-item-field':
+        this.setCustomerItemField(newVal);
         break;
       default:
         return;
     }
   }
+
+  render() {
+    this._listContent.innerHTML = '';
+    this._data.forEach(itemData => {
+      const item = this.constructListItem(itemData);
+      this._listContent.appendChild(item);
+    });
+
+  }
+
+  emptyStageSwift() {
+    if (!this._data || this._data.length <= 0) {
+      this._messageContainer.classList.remove('list__empty-stage--hide');
+      this._messageContainer.classList.add('list__empty-stage--active');
+    } else {
+      this._messageContainer.classList.remove('list__empty-stage--active');
+      this._messageContainer.classList.add('list__empty-stage--hide');
+    }
+  }
+
+  normalizeRender() {
+    this._slot.classList.add('hide-content');
+    console.log(this._slot);
+  }
+
+  constructListItem(itemData) {
+    const customerTemplate = this._listItemTemplate;
+    const clone = document.createElement('div');
+    clone.classList.add('list__item')
+    clone.innerHTML = customerTemplate;
+    clone.childNodes[0].setAttribute(this._customerField, JSON.stringify(itemData));
+    return clone;
+  }
 }
+
 
 window.customElements.define('tig-list', TigList);
